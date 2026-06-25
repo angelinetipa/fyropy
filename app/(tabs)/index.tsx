@@ -1,4 +1,6 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CaptureBar } from '../../src/components/CaptureBar';
 import { Screen } from '../../src/components/Screen';
 import { colors } from '../../src/constants/colors';
@@ -8,9 +10,18 @@ import { Item } from '../../src/types';
 
 export default function Inbox() {
   const { items, loading, add } = useItems();
+  const router = useRouter();
 
   return (
-    <Screen title="Inbox" subtitle="Catch it. Keep it.">
+    <Screen
+      title="Inbox"
+      subtitle="Catch it. Keep it."
+      headerRight={
+        <Pressable onPress={() => router.push('/settings')} hitSlop={8}>
+          <Ionicons name="settings-outline" size={22} color={colors.inkSoft} />
+        </Pressable>
+      }
+    >
       <CaptureBar onCapture={add} />
       <FlatList
         data={items}
