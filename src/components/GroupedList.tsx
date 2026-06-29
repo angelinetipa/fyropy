@@ -18,10 +18,11 @@ type Props = {
   onToggleDone?: (i: Item) => void;
   onDelete?: (i: Item) => void;
   onRenameGroup?: (from: string, to: string) => void;
+  onPressItem?: (i: Item) => void;
 };
 
 export function GroupedList({
-  items, loading, emptyText, onToggleDone, onDelete, onRenameGroup,
+  items, loading, emptyText, onToggleDone, onDelete, onRenameGroup, onPressItem,
 }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<string | null>(null);
@@ -85,11 +86,7 @@ export function GroupedList({
                 <Text style={styles.countText}>{section.count}</Text>
               </View>
               {onRenameGroup ? (
-                <Pressable
-                  onPress={() => setEditing(section.title)}
-                  hitSlop={8}
-                  style={styles.editBtn}
-                >
+                <Pressable onPress={() => setEditing(section.title)} hitSlop={8} style={styles.editBtn}>
                   <Ionicons name="pencil" size={14} color={colors.inkFaint} />
                 </Pressable>
               ) : null}
@@ -98,7 +95,12 @@ export function GroupedList({
         }}
         renderItem={({ item }) => (
           <View style={styles.itemWrap}>
-            <ItemCard item={item} onToggleDone={onToggleDone} onDelete={onDelete} />
+            <ItemCard
+              item={item}
+              onToggleDone={onToggleDone}
+              onDelete={onDelete}
+              onPress={onPressItem}
+            />
           </View>
         )}
       />

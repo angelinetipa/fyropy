@@ -1,10 +1,12 @@
 import { GroupedList } from '../../src/components/GroupedList';
 import { Screen } from '../../src/components/Screen';
 import { SearchBar } from '../../src/components/SearchBar';
+import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Notes() {
-  const { items, loading, query, setQuery, remove, rename } = useItems(['note', 'idea']);
+  const { items, loading, query, setQuery, saveText, remove, rename } = useItems(['note', 'idea']);
+  const detail = useItemDetail({ onSaveText: saveText, onDelete: remove });
 
   return (
     <Screen title="Notes" subtitle="Things to keep.">
@@ -15,7 +17,9 @@ export default function Notes() {
         emptyText={query ? 'No matches.' : 'No notes or ideas yet.'}
         onDelete={remove}
         onRenameGroup={rename}
+        onPressItem={detail.open}
       />
+      {detail.element}
     </Screen>
   );
 }

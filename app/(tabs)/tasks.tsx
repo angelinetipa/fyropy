@@ -1,10 +1,13 @@
 import { GroupedList } from '../../src/components/GroupedList';
 import { Screen } from '../../src/components/Screen';
 import { SearchBar } from '../../src/components/SearchBar';
+import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Tasks() {
-  const { items, loading, query, setQuery, toggleDone, remove, rename } = useItems(['task']);
+  const { items, loading, query, setQuery, saveText, toggleDone, remove, rename } =
+    useItems(['task']);
+  const detail = useItemDetail({ onSaveText: saveText, onDelete: remove, onToggleDone: toggleDone });
 
   return (
     <Screen title="Tasks" subtitle="Things to do.">
@@ -16,7 +19,9 @@ export default function Tasks() {
         onToggleDone={toggleDone}
         onDelete={remove}
         onRenameGroup={rename}
+        onPressItem={detail.open}
       />
+      {detail.element}
     </Screen>
   );
 }

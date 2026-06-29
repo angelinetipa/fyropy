@@ -7,7 +7,7 @@ import {
   listItems,
   renameGroup,
   setDone,
-  updateItemTriage,
+  updateItemText, updateItemTriage,
 } from '../services/items';
 import { Item, ItemType } from '../types';
 
@@ -49,7 +49,7 @@ export function useItems(filter?: ItemType[]) {
             .filter((i) => !filter || (i.type && filter.includes(i.type)))
         );
       } catch {
-        // leave as raw text on failure
+        // leave as-is on failure
       } finally {
         setTriagingIds((prev) => {
           const next = new Set(prev);
@@ -70,6 +70,19 @@ export function useItems(filter?: ItemType[]) {
     },
     [runTriage]
   );
+
+  const saveText = useCallback(
+    async (item: Item, text: string) => {
+      const t = text.trim();
+      if (!t || t === item.raw_text) return;
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, raw_text: t } : i)));
+      await updateItemText(item.id, t);
+      await runTriage({ ...item, raw_text: t });
+    },
+    [runTriage]
+  );
+
+  const retriage = useCallback((item: Item) => runTriage(item), [runTriage]);
 
   const toggleDone = useCallback(async (item: Item) => {
     const next = !item.done;
@@ -127,6 +140,8 @@ export function useItems(filter?: ItemType[]) {
     query,
     setQuery,
     add,
+    saveText,
+    retriage,
     toggleDone,
     remove,
     rename,

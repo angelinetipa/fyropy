@@ -7,12 +7,14 @@ import { Screen } from '../../src/components/Screen';
 import { SearchBar } from '../../src/components/SearchBar';
 import { colors } from '../../src/constants/colors';
 import { space, type as typo } from '../../src/constants/theme';
+import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Inbox() {
-  const { items, loading, triagingIds, query, setQuery, add, toggleDone, remove } =
+  const { items, loading, triagingIds, query, setQuery, add, saveText, toggleDone, remove } =
     useItems();
   const router = useRouter();
+  const detail = useItemDetail({ onSaveText: saveText, onDelete: remove, onToggleDone: toggleDone });
 
   return (
     <Screen
@@ -38,6 +40,7 @@ export default function Inbox() {
             triaging={triagingIds.has(item.id)}
             onToggleDone={toggleDone}
             onDelete={remove}
+            onPress={detail.open}
           />
         )}
         ListEmptyComponent={
@@ -48,6 +51,7 @@ export default function Inbox() {
           ) : null
         }
       />
+      {detail.element}
     </Screen>
   );
 }
