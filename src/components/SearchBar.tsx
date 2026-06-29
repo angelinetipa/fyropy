@@ -1,16 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { colors } from '../constants/colors';
-import { radius, space, type as typo } from '../constants/theme';
+import { inset, noOutline, radius, space, type } from '../constants/theme';
 
 type Props = { value: string; onChange: (v: string) => void };
 
 export function SearchBar({ value, onChange }: Props) {
   return (
-    <View style={styles.wrap}>
+    <View style={[inset, styles.wrap]}>
       <Ionicons name="search" size={18} color={colors.inkFaint} />
       <TextInput
-        style={styles.input}
+        style={[styles.input, noOutline]}
         placeholder="Search…"
         placeholderTextColor={colors.inkFaint}
         value={value}
@@ -31,11 +31,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
-    backgroundColor: colors.surfaceSunk,
     borderRadius: radius.pill,
     paddingHorizontal: space.md,
     paddingVertical: space.sm,
     marginBottom: space.sm,
   },
-  input: { ...typo.body, flex: 1, paddingVertical: 2 },
+  input: { ...type.body, flex: 1, paddingVertical: 2 },
 });

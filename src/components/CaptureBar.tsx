@@ -8,7 +8,7 @@ import {
     View,
 } from 'react-native';
 import { colors } from '../constants/colors';
-import { clay, radius, space } from '../constants/theme';
+import { clay, glow, noOutline, radius, space, type } from '../constants/theme';
 
 type Props = { onCapture: (text: string) => Promise<void> };
 
@@ -31,7 +31,7 @@ export function CaptureBar({ onCapture }: Props) {
   return (
     <View style={[clay, styles.bar]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, noOutline]}
         placeholder="Catch a thought, link, or task…"
         placeholderTextColor={colors.inkFaint}
         value={text}
@@ -40,7 +40,7 @@ export function CaptureBar({ onCapture }: Props) {
         returnKeyType="done"
         multiline
       />
-      <Pressable style={styles.button} onPress={send} disabled={busy}>
+      <Pressable style={[styles.button, glow]} onPress={send} disabled={busy}>
         {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.plus}>+</Text>}
       </Pressable>
     </View>
@@ -48,14 +48,26 @@ export function CaptureBar({ onCapture }: Props) {
 }
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'flex-end', padding: space.sm, gap: space.sm },
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    padding: space.sm,
+    gap: space.sm,
+  },
   input: {
-    flex: 1, color: colors.ink, fontSize: 16,
-    paddingHorizontal: space.sm, paddingVertical: space.sm, maxHeight: 120,
+    ...type.body,
+    flex: 1,
+    paddingHorizontal: space.sm,
+    paddingVertical: space.sm,
+    maxHeight: 120,
   },
   button: {
-    backgroundColor: colors.accent, width: 44, height: 44,
-    borderRadius: radius.md, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent,
+    width: 46,
+    height: 46,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  plus: { color: '#fff', fontSize: 24, fontWeight: '700', lineHeight: 26 },
+  plus: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 28 },
 });

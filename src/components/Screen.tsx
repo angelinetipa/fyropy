@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,6 +18,11 @@ export function Screen({ title, subtitle, onBack, headerRight, children }: Props
   const showTopRow = onBack || headerRight;
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <LinearGradient
+        colors={[colors.accentGlow, 'transparent']}
+        style={styles.glow}
+        pointerEvents="none"
+      />
       <View style={styles.header}>
         {showTopRow ? (
           <View style={styles.topRow}>
@@ -40,6 +46,7 @@ export function Screen({ title, subtitle, onBack, headerRight, children }: Props
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
+  glow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
   header: {
     paddingHorizontal: space.lg,
     paddingTop: space.lg,

@@ -1,12 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
-import { clay, radius, space, type as typo } from '../constants/theme';
+import { clay, radius, space, type } from '../constants/theme';
 import { Item, ItemType } from '../types';
 
 const TYPE_COLOR: Record<ItemType, string> = {
   task: colors.accent,
-  idea: '#8B6CF6',
+  idea: colors.idea,
   note: colors.inkSoft,
 };
 
@@ -41,7 +41,10 @@ export function ItemCard({ item, triaging, onToggleDone, onDelete }: Props) {
       </View>
 
       {triaging ? (
-        <Text style={styles.sorting}>sorting…</Text>
+        <View style={styles.sortingRow}>
+          <View style={styles.dot} />
+          <Text style={styles.sorting}>sorting…</Text>
+        </View>
       ) : item.type ? (
         <View style={styles.meta}>
           <View style={styles.chipRow}>
@@ -65,17 +68,31 @@ const styles = StyleSheet.create({
   row: { padding: space.md },
   top: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   check: { paddingTop: 1 },
-  text: { ...typo.body, flex: 1 },
+  text: { ...type.bodyMedium, flex: 1, lineHeight: 22 },
   done: { textDecorationLine: 'line-through', color: colors.inkFaint },
-  sorting: { ...typo.caption, color: colors.accent, marginTop: space.sm, fontStyle: 'italic' },
+  sortingRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.sm },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent },
+  sorting: { ...type.mono, color: colors.accent },
   meta: { marginTop: space.sm },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, alignItems: 'center' },
-  typeChip: { paddingHorizontal: space.sm, paddingVertical: 2, borderRadius: radius.pill },
-  typeText: { color: '#fff', fontSize: 11, fontWeight: '700', textTransform: 'uppercase' },
-  tag: {
-    paddingHorizontal: space.sm, paddingVertical: 2,
-    borderRadius: radius.pill, backgroundColor: colors.surfaceSunk,
+  typeChip: {
+    paddingHorizontal: space.sm,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
   },
-  tagText: { ...typo.caption, color: colors.inkSoft },
-  summary: { ...typo.caption, color: colors.inkSoft, marginTop: space.xs },
+  typeText: {
+    ...type.mono,
+    color: '#fff',
+    fontSize: 10,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  tag: {
+    paddingHorizontal: space.sm,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceSunk,
+  },
+  tagText: { ...type.mono, color: colors.inkSoft },
+  summary: { ...type.caption, color: colors.inkSoft, marginTop: space.xs, lineHeight: 18 },
 });

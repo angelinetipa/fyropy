@@ -5,6 +5,7 @@
 export const colors = {
   // Backgrounds
   bg: '#FBF4EA',          // soft cream
+  bgWarm: '#FCEEDD',      // warmer wash (header glow)
   surface: '#FFFFFF',     // card
   surfaceSunk: '#F3E9DA', // pressed / inset
 
@@ -17,9 +18,13 @@ export const colors = {
   accent: '#FF7A2F',      // glowing orange
   accentSoft: '#FFB06B',  // lighter glow
   accentSunk: '#E85F12',  // pressed
+  accentGlow: 'rgba(255,122,47,0.16)', // soft wash behind headers
+
+  // Type accents
+  idea: '#8B6CF6',        // violet (idea chip)
 
   // Utility
-  line: '#EADfce',        // hairline borders
+  line: '#EADFCE',        // hairline borders
   good: '#3FA66B',        // done / success
   warn: '#E0A93F',
 } as const;
