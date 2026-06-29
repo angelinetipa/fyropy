@@ -4,7 +4,7 @@ import { SearchBar } from '../../src/components/SearchBar';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Tasks() {
-  const { items, loading, query, setQuery, toggleDone, remove } = useItems(['task']);
+  const { items, loading, query, setQuery, toggleDone, remove, rename } = useItems(['task']);
 
   return (
     <Screen title="Tasks" subtitle="Things to do.">
@@ -15,6 +15,7 @@ export default function Tasks() {
         emptyText={query ? 'No matches.' : 'No tasks yet. Capture one in the Inbox.'}
         onToggleDone={toggleDone}
         onDelete={remove}
+        onRenameGroup={rename}
       />
     </Screen>
   );

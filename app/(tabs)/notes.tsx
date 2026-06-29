@@ -4,7 +4,7 @@ import { SearchBar } from '../../src/components/SearchBar';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Notes() {
-  const { items, loading, query, setQuery, remove } = useItems(['note', 'idea']);
+  const { items, loading, query, setQuery, remove, rename } = useItems(['note', 'idea']);
 
   return (
     <Screen title="Notes" subtitle="Things to keep.">
@@ -14,6 +14,7 @@ export default function Notes() {
         loading={loading}
         emptyText={query ? 'No matches.' : 'No notes or ideas yet.'}
         onDelete={remove}
+        onRenameGroup={rename}
       />
     </Screen>
   );

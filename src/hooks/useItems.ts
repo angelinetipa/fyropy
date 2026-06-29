@@ -2,11 +2,12 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { triage } from '../services/ai';
 import {
-    createItem,
-    deleteItem,
-    listItems,
-    setDone,
-    updateItemTriage,
+  createItem,
+  deleteItem,
+  listItems,
+  renameGroup,
+  setDone,
+  updateItemTriage,
 } from '../services/items';
 import { Item, ItemType } from '../types';
 
@@ -26,7 +27,6 @@ export function useItems(filter?: ItemType[]) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey]);
 
-  // Re-fetch every time the tab gains focus (fixes the "press F5" issue).
   useFocusEffect(
     useCallback(() => {
       refresh();
@@ -41,7 +41,11 @@ export function useItems(filter?: ItemType[]) {
         await updateItemTriage(item.id, t);
         setItems((prev) =>
           prev
-            .map((i) => (i.id === item.id ? { ...i, ...t } : i))
+            .map((i) =>
+              i.id === item.id
+                ? { ...i, type: t.type, tags: t.tags, summary: t.summary, group_name: t.group }
+                : i
+            )
             .filter((i) => !filter || (i.type && filter.includes(i.type)))
         );
       } catch {
@@ -89,12 +93,27 @@ export function useItems(filter?: ItemType[]) {
     [refresh]
   );
 
-  // Search across raw text, summary, and tags.
+  const rename = useCallback(
+    async (from: string, to: string) => {
+      const target = to.trim();
+      if (!target || target === from) return;
+      setItems((prev) =>
+        prev.map((i) => (i.group_name === from ? { ...i, group_name: target } : i))
+      );
+      try {
+        await renameGroup(from, target);
+      } catch {
+        refresh();
+      }
+    },
+    [refresh]
+  );
+
   const visibleItems = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return items;
     return items.filter((i) => {
-      const hay = [i.raw_text, i.summary ?? '', ...(i.tags ?? [])]
+      const hay = [i.raw_text, i.summary ?? '', i.group_name ?? '', ...(i.tags ?? [])]
         .join(' ')
         .toLowerCase();
       return hay.includes(q);
@@ -110,6 +129,7 @@ export function useItems(filter?: ItemType[]) {
     add,
     toggleDone,
     remove,
+    rename,
     refresh,
   };
 }
