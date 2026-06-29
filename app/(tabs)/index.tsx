@@ -7,6 +7,7 @@ import { Screen } from '../../src/components/Screen';
 import { SearchBar } from '../../src/components/SearchBar';
 import { colors } from '../../src/constants/colors';
 import { space, type as typo } from '../../src/constants/theme';
+import { useDeleteConfirm } from '../../src/hooks/useDeleteConfirm';
 import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
 
@@ -15,6 +16,7 @@ export default function Inbox() {
     useItems();
   const router = useRouter();
   const detail = useItemDetail({ onSaveText: saveText, onDelete: remove, onToggleDone: toggleDone });
+  const del = useDeleteConfirm(remove);
 
   return (
     <Screen
@@ -39,7 +41,7 @@ export default function Inbox() {
             item={item}
             triaging={triagingIds.has(item.id)}
             onToggleDone={toggleDone}
-            onDelete={remove}
+            onDelete={del.requestDelete}
             onPress={detail.open}
           />
         )}
@@ -52,6 +54,7 @@ export default function Inbox() {
         }
       />
       {detail.element}
+      {del.element}
     </Screen>
   );
 }
