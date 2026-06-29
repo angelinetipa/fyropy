@@ -13,6 +13,7 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import { colors } from '../constants/colors';
 import { clay, noOutline, radius, space, type } from '../constants/theme';
 import { timeAgo } from '../lib/time';
+import { organizeText } from '../services/ai';
 import { Item, ItemType } from '../types';
 
 const TYPE_COLOR: Record<ItemType, string> = {
@@ -48,6 +49,8 @@ function DetailInner({
   const [text, setText] = useState(item.raw_text);
   const [done, setDone] = useState(item.done);
   const [busy, setBusy] = useState(false);
+  const [organizing, setOrganizing] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [inputH, setInputH] = useState(0);
 
@@ -63,6 +66,20 @@ function DetailInner({
       onClose();
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function organize() {
+    if (!text.trim() || organizing) return;
+    setErr(null);
+    setOrganizing(true);
+    try {
+      const tidy = await organizeText(text);
+      setText(tidy);
+    } catch (e: any) {
+      setErr(e?.message ?? 'Could not organize. Check your AI key in Settings.');
+    } finally {
+      setOrganizing(false);
     }
   }
 
@@ -99,6 +116,23 @@ function DetailInner({
               placeholder="Your thought…"
               placeholderTextColor={colors.inkFaint}
             />
+
+            <Pressable
+              style={({ hovered }) => [styles.organize, hovered && styles.organizeHover]}
+              onPress={organize}
+              disabled={organizing}
+            >
+              {organizing ? (
+                <ActivityIndicator size="small" color={colors.accent} />
+              ) : (
+                <Ionicons name="sparkles-outline" size={16} color={colors.accent} />
+              )}
+              <Text style={styles.organizeText}>
+                {organizing ? 'Organizing…' : 'Organize text'}
+              </Text>
+            </Pressable>
+
+            {err ? <Text style={styles.err}>{err}</Text> : null}
 
             {item.type ? (
               <View style={styles.chipRow}>
@@ -184,6 +218,20 @@ const styles = StyleSheet.create({
     minHeight: INPUT_MIN,
     paddingVertical: space.sm,
   },
+  organize: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: space.xs,
+    paddingVertical: 6,
+    paddingHorizontal: space.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accentGlow,
+    marginTop: space.sm,
+  },
+  organizeHover: { backgroundColor: 'rgba(255,122,47,0.24)' },
+  organizeText: { ...type.label, color: colors.accentSunk, fontSize: 13 },
+  err: { ...type.caption, color: colors.accentSunk, marginTop: space.xs },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
