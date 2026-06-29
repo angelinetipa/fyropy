@@ -1,50 +1,92 @@
-# Welcome to your Expo app 👋
+# Fyropy 🔥
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Catch it. Keep it.** A fast "second brain" for capturing any thought, link, or task — and letting AI sort it for you.
 
-## Get started
+🔗 **Live:** fyropy.vercel.app
+💻 **Repo:** github.com/angelinetipa/fyropy
 
-1. Install dependencies
+> An honest portfolio / learning project. Built to practice real product engineering — auth, a typed data layer, AI integration, and a considered design system — not to be a finished commercial app. Tech choices and scope reflect that.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## What it does
 
-   ```bash
-   npx expo start
-   ```
+Drop a thought into the capture bar in about two seconds. Fyropy saves it, then AI quietly fills in the details — what kind of thing it is, a few tags, a one-line summary, and a topic group — so your inbox organizes itself instead of you doing it by hand.
 
-In the output, you'll find options to open the app in a
+It's opinionated and quick, not a blank-canvas note tool.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Features
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Quick capture** — one bar, paste anything, it's saved instantly.
+- **AI triage** — each capture is auto-sorted into a type (note / task / idea), tags, summary, and topic group.
+- **Organize text** — tidy a single messy note into clean grouped bullets, in place, without changing its meaning.
+- **Three views** — Inbox (flat stream), Tasks, and Notes (grouped into collapsible topic sections).
+- **Live search** across text, tags, group, and summary.
+- **Item detail** — tap a card to edit, re-sort with AI, mark done, or delete (with a confirm step).
+- **Pull-to-refresh** on every list.
+- **Responsive nav** — collapsible sidebar on web, bottom tabs on phone.
+- **Bring your own AI key** — Groq or Gemini free tier, stored per user.
 
-## Get a fresh project
+## Tech stack
 
-When you're ready, run:
+- **App:** React Native + Expo (SDK 54), Expo Router, TypeScript
+- **Web-first**, also runs in Expo Go
+- **Backend:** Supabase — Postgres, Auth, Row Level Security
+- **AI:** BYOK via Groq (`llama-3.1-8b-instant`) or Gemini (`1.5-flash`)
+- **Hosting:** Vercel (web, auto-deploys on push to `main`)
+- **Design:** "fire-opal" theme — claymorphism, amber accents. Fonts: Space Grotesk, Manrope, JetBrains Mono.
 
-```bash
-npm run reset-project
+> Honest note on skill level: I'm proficient in Python, SQL, and HTML/CSS. TypeScript, React, and React Native are areas I'm actively building — this project is part of that growth.
+
+## Project structure
+
+```
+app/        Expo Router routes only (auth, tabs, layout)
+src/
+  components/   UI building blocks (cards, lists, modals, capture bar)
+  hooks/        State + reusable logic (useItems, useItemDetail, useAuth, ...)
+  services/     Data + AI calls (items, ai, settings)
+  constants/    Colors and theme tokens
+  lib/          Supabase client, time helpers
+  types/        Shared TypeScript types
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Components, hooks, and services are kept in separate files so logic stays reusable and easy to read.
 
-## Learn more
+## Data model (Supabase)
 
-To learn more about developing your project with Expo, look at the following resources:
+- **`items`** — `id`, `user_id`, `raw_text`, `type`, `tags[]`, `summary`, `url`, `group_name`, `done`, `created_at`
+- **`settings`** — `user_id`, `ai_provider`, `ai_key`
+- **`summaries`** — reserved for a future weekly digest
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+All tables use Row Level Security so each user only sees their own data.
 
-## Join the community
+## Getting started
 
-Join our community of developers creating universal apps.
+```bash
+# 1. Install
+npm install
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# 2. Add your Supabase keys (.env)
+EXPO_PUBLIC_SUPABASE_URL=your-url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# 3. Run
+npx expo start        # phone (Expo Go) or web
+```
+
+Then sign up, open **Settings**, and paste a free **Groq** or **Gemini** API key to enable AI sorting.
+
+## Roadmap
+
+- Link previews (page title instead of raw URL)
+- Analytics dashboard — captures per day, completion rate, tag trends
+- Postgres views/functions + `pgvector` semantic search
+- Nightly Supabase Edge Function pipeline → `summaries`
+- AI weekly digest and natural-language capture ("call mom friday" → task with due date)
+- Android build via EAS
+
+## Author
+
+**Ma. Angeline T. Tipa** — BS Computer Engineering, PUP Manila
+GitHub: [@angelinetipa](https://github.com/angelinetipa) · Portfolio: opal-portfolio.vercel.app
