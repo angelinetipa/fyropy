@@ -1,12 +1,11 @@
 import { supabase } from '../lib/supabase';
-import { Item } from '../types';
+import { Item, ItemType } from '../types';
 import { Triage } from './ai';
 
-export async function listItems(): Promise<Item[]> {
-  const { data, error } = await supabase
-    .from('items')
-    .select('*')
-    .order('created_at', { ascending: false });
+export async function listItems(types?: ItemType[]): Promise<Item[]> {
+  let q = supabase.from('items').select('*').order('created_at', { ascending: false });
+  if (types && types.length) q = q.in('type', types);
+  const { data, error } = await q;
   if (error) throw error;
   return data as Item[];
 }
@@ -30,6 +29,16 @@ export async function updateItemTriage(id: string, t: Triage): Promise<void> {
     .from('items')
     .update({ type: t.type, tags: t.tags, summary: t.summary })
     .eq('id', id);
+  if (error) throw error;
+}
+
+export async function setDone(id: string, done: boolean): Promise<void> {
+  const { error } = await supabase.from('items').update({ done }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteItem(id: string): Promise<void> {
+  const { error } = await supabase.from('items').delete().eq('id', id);
   if (error) throw error;
 }
 
