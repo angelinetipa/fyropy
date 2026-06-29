@@ -8,11 +8,11 @@ import {
     Text, TextInput,
     View,
 } from 'react-native';
-import { Screen } from '../src/components/Screen';
-import { colors } from '../src/constants/colors';
-import { clay, radius, space, type } from '../src/constants/theme';
-import { supabase } from '../src/lib/supabase';
-import { AiProvider, getSettings, saveSettings } from '../src/services/settings';
+import { Screen } from '../../src/components/Screen';
+import { colors } from '../../src/constants/colors';
+import { clay, radius, space, type } from '../../src/constants/theme';
+import { supabase } from '../../src/lib/supabase';
+import { AiProvider, getSettings, saveSettings } from '../../src/services/settings';
 
 export default function Settings() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function Settings() {
   }
 
   async function signOut() {
-    await supabase.auth.signOut(); // auth listener routes back to /login
+    await supabase.auth.signOut();
   }
 
   return (
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: colors.surfaceSunk, borderRadius: radius.md,
     paddingHorizontal: space.md, paddingVertical: space.md,
-    fontSize: 16, color: colors.ink, marginTop: space.sm,
+    ...type.body, marginTop: space.sm,
   },
   hint: { ...type.caption, marginTop: space.sm },
   saveBtn: {
@@ -125,8 +125,6 @@ const styles = StyleSheet.create({
     paddingVertical: space.md, alignItems: 'center', marginTop: space.lg,
   },
   saveText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  signOut: {
-    marginTop: space.lg, paddingVertical: space.md, alignItems: 'center',
-  },
+  signOut: { marginTop: space.lg, paddingVertical: space.md, alignItems: 'center' },
   signOutText: { ...type.label, color: colors.accent },
 });

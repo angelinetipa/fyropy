@@ -54,7 +54,6 @@ function RootNav() {
     >
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(auth)" />
-      <Stack.Screen name="settings" options={{ presentation: 'card' }} />
     </Stack>
   );
 }

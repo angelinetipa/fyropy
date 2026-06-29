@@ -1,52 +1,31 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Slot } from 'expo-router';
+import { View, useWindowDimensions } from 'react-native';
+import { AppNav } from '../../src/components/AppNav';
 import { colors } from '../../src/constants/colors';
 
+const WIDE_BREAKPOINT = 768;
+
 export default function TabsLayout() {
+  const { width } = useWindowDimensions();
+  const wide = width >= WIDE_BREAKPOINT;
+
+  if (wide) {
+    return (
+      <View style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.bg }}>
+        <AppNav wide />
+        <View style={{ flex: 1, minHeight: 0 }}>
+          <Slot />
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <Tabs
-      screenOptions={{
-        sceneStyle: { backgroundColor: colors.bg }, // or sceneContainerStyle
-        headerShown: false,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.inkFaint,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.line,
-          height: 64,
-          paddingBottom: 10,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Inbox',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="flash-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tasks"
-        options={{
-          title: 'Tasks',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="checkbox-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notes"
-        options={{
-          title: 'Notes',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text-outline" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <View style={{ flex: 1, minHeight: 0 }}>
+        <Slot />
+      </View>
+      <AppNav />
+    </View>
   );
 }
