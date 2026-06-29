@@ -1,14 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
-    ActivityIndicator,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text, TextInput,
-    View,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text, TextInput,
+  View,
 } from 'react-native';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { colors } from '../constants/colors';
 import { clay, noOutline, radius, space, type } from '../constants/theme';
 import { timeAgo } from '../lib/time';
@@ -44,6 +45,7 @@ function DetailInner({
   const [text, setText] = useState(item.raw_text);
   const [done, setDone] = useState(item.done);
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const changed = text.trim() !== item.raw_text && text.trim().length > 0;
 
@@ -63,6 +65,7 @@ function DetailInner({
   }
 
   async function del() {
+    setConfirmDelete(false);
     await actions.onDelete(item);
     onClose();
   }
@@ -132,13 +135,23 @@ function DetailInner({
             ) : (
               <View />
             )}
-            <Pressable style={styles.footBtn} onPress={del}>
+            <Pressable style={styles.footBtn} onPress={() => setConfirmDelete(true)}>
               <Ionicons name="trash-outline" size={18} color={colors.accentSunk} />
               <Text style={[styles.footText, { color: colors.accentSunk }]}>Delete</Text>
             </Pressable>
           </View>
         </Pressable>
       </Pressable>
+
+      <ConfirmModal
+        visible={confirmDelete}
+        title="Delete this?"
+        message="This thought will be gone for good. You can't undo it."
+        confirmLabel="Delete"
+        danger
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={del}
+      />
     </Modal>
   );
 }
