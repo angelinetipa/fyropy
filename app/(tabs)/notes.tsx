@@ -13,9 +13,11 @@ export default function Notes() {
     <Screen title="Notes" subtitle="Things to keep.">
       <SearchBar value={query} onChange={setQuery} />
       <FlatList
+        style={{ flex: 1, minHeight: 0 }}
         data={items}
         keyExtractor={(it) => it.id}
-        contentContainerStyle={{ paddingVertical: space.sm, gap: space.sm }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.list}
         renderItem={({ item }) => <ItemCard item={item} onDelete={remove} />}
         ListEmptyComponent={
           !loading ? (
@@ -30,5 +32,6 @@ export default function Notes() {
 }
 
 const styles = StyleSheet.create({
+  list: { paddingTop: space.xs, paddingBottom: space.xl, paddingRight: space.sm, gap: space.sm },
   empty: { ...typo.body, color: colors.inkSoft, textAlign: 'center', marginTop: space.xl },
 });

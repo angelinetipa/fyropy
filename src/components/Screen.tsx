@@ -19,7 +19,10 @@ export function Screen({ title, subtitle, onBack, headerRight, children }: Props
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <LinearGradient
-        colors={[colors.accentGlow, 'transparent']}
+        colors={['rgba(255,122,47,0.16)', 'rgba(139,108,246,0.04)', 'transparent']}
+        locations={[0, 0.55, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={styles.glow}
         pointerEvents="none"
       />
@@ -45,8 +48,8 @@ export function Screen({ title, subtitle, onBack, headerRight, children }: Props
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
-  glow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
+  safe: { flex: 1, minHeight: 0, backgroundColor: colors.bg },
+  glow: { position: 'absolute', top: 0, left: 0, right: 0, height: 180 },
   header: {
     paddingHorizontal: space.lg,
     paddingTop: space.lg,
@@ -59,5 +62,5 @@ const styles = StyleSheet.create({
     marginBottom: space.sm,
   },
   subtitle: { ...type.body, color: colors.inkSoft, marginTop: space.xs },
-  body: { flex: 1, paddingHorizontal: space.lg },
+  body: { flex: 1, minHeight: 0, paddingHorizontal: space.lg },
 });

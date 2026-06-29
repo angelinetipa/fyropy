@@ -61,6 +61,21 @@ export const clay = Platform.select({
   },
 }) as object;
 
+/** Stronger shadow used on hover (web) */
+export const clayHover = Platform.select({
+  web: {
+    boxShadow:
+      'inset 0 1px 0 rgba(255,255,255,0.9), 0 20px 40px rgba(150,90,40,0.16), 0 6px 12px rgba(150,90,40,0.08)',
+  },
+  default: {},
+}) as object;
+
+/** Smooth transition for hover/press (web only) */
+export const transition = Platform.select({
+  web: { transitionDuration: '160ms', transitionProperty: 'transform, box-shadow' },
+  default: {},
+}) as object;
+
 /** Glowing accent — for primary buttons */
 export const glow = Platform.select({
   web: { boxShadow: '0 8px 20px rgba(255,122,47,0.35)' },
@@ -71,6 +86,12 @@ export const glow = Platform.select({
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
+}) as object;
+
+/** Stronger glow on hover (web) */
+export const glowHover = Platform.select({
+  web: { boxShadow: '0 10px 26px rgba(255,122,47,0.5)' },
+  default: {},
 }) as object;
 
 /** Sunk / inset surface — for inputs */

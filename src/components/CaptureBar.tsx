@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import {
     ActivityIndicator,
@@ -8,7 +9,9 @@ import {
     View,
 } from 'react-native';
 import { colors } from '../constants/colors';
-import { clay, glow, noOutline, radius, space, type } from '../constants/theme';
+import {
+    clay, glow, glowHover, noOutline, radius, space, transition, type,
+} from '../constants/theme';
 
 type Props = { onCapture: (text: string) => Promise<void> };
 
@@ -40,7 +43,24 @@ export function CaptureBar({ onCapture }: Props) {
         returnKeyType="done"
         multiline
       />
-      <Pressable style={[styles.button, glow]} onPress={send} disabled={busy}>
+      <Pressable
+        onPress={send}
+        disabled={busy}
+        style={({ hovered, pressed }) => [
+          styles.button,
+          glow,
+          transition,
+          hovered && glowHover,
+          hovered && styles.btnHover,
+          pressed && styles.btnPress,
+        ]}
+      >
+        <LinearGradient
+          colors={[colors.accentSoft, colors.accent, colors.accentSunk]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
         {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.plus}>+</Text>}
       </Pressable>
     </View>
@@ -53,6 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: space.sm,
     gap: space.sm,
+    marginBottom: space.md,
   },
   input: {
     ...type.body,
@@ -62,12 +83,14 @@ const styles = StyleSheet.create({
     maxHeight: 120,
   },
   button: {
-    backgroundColor: colors.accent,
     width: 46,
     height: 46,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
+  btnHover: { transform: [{ scale: 1.06 }] },
+  btnPress: { transform: [{ scale: 0.95 }] },
   plus: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 28 },
 });

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
-import { clay, radius, space, type } from '../constants/theme';
+import { clay, clayHover, radius, space, transition, type } from '../constants/theme';
 import { Item, ItemType } from '../types';
 
 const TYPE_COLOR: Record<ItemType, string> = {
@@ -15,11 +15,22 @@ type Props = {
   triaging?: boolean;
   onToggleDone?: (item: Item) => void;
   onDelete?: (item: Item) => void;
+  onPress?: (item: Item) => void;
 };
 
-export function ItemCard({ item, triaging, onToggleDone, onDelete }: Props) {
+export function ItemCard({ item, triaging, onToggleDone, onDelete, onPress }: Props) {
   return (
-    <View style={[clay, styles.row]}>
+    <Pressable
+      onPress={onPress ? () => onPress(item) : undefined}
+      style={({ hovered, pressed }) => [
+        clay,
+        transition,
+        styles.row,
+        hovered && clayHover,
+        hovered && styles.lift,
+        pressed && styles.press,
+      ]}
+    >
       <View style={styles.top}>
         {onToggleDone && item.type === 'task' ? (
           <Pressable onPress={() => onToggleDone(item)} hitSlop={8} style={styles.check}>
@@ -60,12 +71,14 @@ export function ItemCard({ item, triaging, onToggleDone, onDelete }: Props) {
           {item.summary ? <Text style={styles.summary}>{item.summary}</Text> : null}
         </View>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   row: { padding: space.md },
+  lift: { transform: [{ translateY: -3 }] },
+  press: { transform: [{ translateY: -1 }] },
   top: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   check: { paddingTop: 1 },
   text: { ...type.bodyMedium, flex: 1, lineHeight: 22 },
@@ -75,11 +88,7 @@ const styles = StyleSheet.create({
   sorting: { ...type.mono, color: colors.accent },
   meta: { marginTop: space.sm },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, alignItems: 'center' },
-  typeChip: {
-    paddingHorizontal: space.sm,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-  },
+  typeChip: { paddingHorizontal: space.sm, paddingVertical: 3, borderRadius: radius.pill },
   typeText: {
     ...type.mono,
     color: '#fff',
