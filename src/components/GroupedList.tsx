@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import type { RefreshControlProps } from 'react-native';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
 import { radius, space, transition, type } from '../constants/theme';
@@ -19,10 +20,11 @@ type Props = {
   onDelete?: (i: Item) => void;
   onRenameGroup?: (from: string, to: string) => void;
   onPressItem?: (i: Item) => void;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
 };
 
 export function GroupedList({
-  items, loading, emptyText, onToggleDone, onDelete, onRenameGroup, onPressItem,
+  items, loading, emptyText, onToggleDone, onDelete, onRenameGroup, onPressItem, refreshControl,
 }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<string | null>(null);
@@ -65,6 +67,7 @@ export function GroupedList({
       <SectionList
         style={{ flex: 1, minHeight: 0 }}
         sections={display}
+        refreshControl={refreshControl}
         keyExtractor={(it) => it.id}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}

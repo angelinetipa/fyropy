@@ -4,12 +4,14 @@ import { SearchBar } from '../../src/components/SearchBar';
 import { useDeleteConfirm } from '../../src/hooks/useDeleteConfirm';
 import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
+import { usePullRefresh } from '../../src/hooks/usePullRefresh';
 
 export default function Tasks() {
-  const { items, loading, query, setQuery, saveText, toggleDone, remove, rename } =
+  const { items, loading, query, setQuery, saveText, toggleDone, remove, rename, refresh } =
     useItems(['task']);
   const detail = useItemDetail({ onSaveText: saveText, onDelete: remove, onToggleDone: toggleDone });
   const del = useDeleteConfirm(remove);
+  const pull = usePullRefresh(refresh);
 
   return (
     <Screen title="Tasks" subtitle="Things to do.">
@@ -22,6 +24,7 @@ export default function Tasks() {
         onDelete={del.requestDelete}
         onRenameGroup={rename}
         onPressItem={detail.open}
+        refreshControl={pull.control}
       />
       {detail.element}
       {del.element}

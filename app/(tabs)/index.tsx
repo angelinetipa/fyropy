@@ -10,13 +10,15 @@ import { space, type as typo } from '../../src/constants/theme';
 import { useDeleteConfirm } from '../../src/hooks/useDeleteConfirm';
 import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
+import { usePullRefresh } from '../../src/hooks/usePullRefresh';
 
 export default function Inbox() {
-  const { items, loading, triagingIds, query, setQuery, add, saveText, toggleDone, remove } =
+  const { items, loading, triagingIds, query, setQuery, add, saveText, toggleDone, remove, refresh } =
     useItems();
   const router = useRouter();
   const detail = useItemDetail({ onSaveText: saveText, onDelete: remove, onToggleDone: toggleDone });
   const del = useDeleteConfirm(remove);
+  const pull = usePullRefresh(refresh);
 
   return (
     <Screen
@@ -33,6 +35,7 @@ export default function Inbox() {
       <FlatList
         style={{ flex: 1, minHeight: 0 }}
         data={items}
+        refreshControl={pull.control}
         keyExtractor={(it) => it.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}

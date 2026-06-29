@@ -4,11 +4,14 @@ import { SearchBar } from '../../src/components/SearchBar';
 import { useDeleteConfirm } from '../../src/hooks/useDeleteConfirm';
 import { useItemDetail } from '../../src/hooks/useItemDetail';
 import { useItems } from '../../src/hooks/useItems';
+import { usePullRefresh } from '../../src/hooks/usePullRefresh';
 
 export default function Notes() {
-  const { items, loading, query, setQuery, saveText, remove, rename } = useItems(['note', 'idea']);
+  const { items, loading, query, setQuery, saveText, remove, rename, refresh } =
+    useItems(['note', 'idea']);
   const detail = useItemDetail({ onSaveText: saveText, onDelete: remove });
   const del = useDeleteConfirm(remove);
+  const pull = usePullRefresh(refresh);
 
   return (
     <Screen title="Notes" subtitle="Things to keep.">
@@ -20,6 +23,7 @@ export default function Notes() {
         onDelete={del.requestDelete}
         onRenameGroup={rename}
         onPressItem={detail.open}
+        refreshControl={pull.control}
       />
       {detail.element}
       {del.element}
