@@ -27,7 +27,7 @@ export async function createItem(rawText: string): Promise<Item> {
 export async function updateItemTriage(id: string, t: Triage): Promise<void> {
   const { error } = await supabase
     .from('items')
-    .update({ type: t.type, tags: t.tags, summary: t.summary })
+    .update({ type: t.type, tags: t.tags, summary: t.summary, group_name: t.group })
     .eq('id', id);
   if (error) throw error;
 }
@@ -39,6 +39,15 @@ export async function setDone(id: string, done: boolean): Promise<void> {
 
 export async function deleteItem(id: string): Promise<void> {
   const { error } = await supabase.from('items').delete().eq('id', id);
+  if (error) throw error;
+}
+
+/** Rename a whole group (used in step B). */
+export async function renameGroup(from: string, to: string): Promise<void> {
+  const { error } = await supabase
+    .from('items')
+    .update({ group_name: to })
+    .eq('group_name', from);
   if (error) throw error;
 }
 

@@ -8,6 +8,7 @@ export type Item = {
   tags: string[];
   summary: string | null;
   url: string | null;
+  group_name: string | null;
   done: boolean;
   created_at: string;
 };

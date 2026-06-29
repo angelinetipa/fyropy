@@ -1,13 +1,20 @@
 import { ItemType } from '../types';
 import { getSettings } from './settings';
 
-export type Triage = { type: ItemType; tags: string[]; summary: string };
+export type Triage = {
+  type: ItemType;
+  group: string;
+  tags: string[];
+  summary: string;
+};
 
 const SYSTEM = `You sort a user's captured thought. Reply ONLY with JSON:
-{"type":"note|task|idea","tags":["lowercase","max 3"],"summary":"one short sentence"}
+{"type":"note|task|idea","group":"broad topic, Title Case, 1-3 words","tags":["lowercase","max 3"],"summary":"one short sentence"}
 - "task": something to do or remember to do.
 - "idea": a thought, plan, or thing to explore.
 - "note": a fact, link, or reference to keep.
+- "group": a GENERAL subject many items could share (e.g. "Big Data", "Errands",
+  "Friends", "Job Search"). Reuse common topics; do NOT invent a unique group per item.
 If it's a link, summarize what the page is likely about. Keep summary under 12 words.`;
 
 export async function triage(rawText: string): Promise<Triage> {
@@ -62,9 +69,13 @@ function parseTriage(raw: string): Triage {
   }
   const valid: ItemType[] = ['note', 'task', 'idea'];
   const type: ItemType = valid.includes(parsed.type) ? parsed.type : 'note';
+  const group =
+    typeof parsed.group === 'string' && parsed.group.trim()
+      ? parsed.group.trim()
+      : 'General';
   const tags = Array.isArray(parsed.tags)
     ? parsed.tags.map((t: any) => String(t).toLowerCase().trim()).slice(0, 3)
     : [];
   const summary = typeof parsed.summary === 'string' ? parsed.summary.trim() : '';
-  return { type, tags, summary };
+  return { type, group, tags, summary };
 }
