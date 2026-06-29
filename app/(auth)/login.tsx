@@ -1,32 +1,53 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import {
-    ActivityIndicator, Alert, Platform,
-    Pressable, StyleSheet,
-    Text, TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable, StyleSheet,
+  Text, TextInput,
+  View,
 } from 'react-native';
 import { colors } from '../../src/constants/colors';
-import { clay, radius, space, type } from '../../src/constants/theme';
+import { clay, glow, inset, noOutline, radius, space, type } from '../../src/constants/theme';
 import { supabase } from '../../src/lib/supabase';
+
+function friendly(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes('invalid login')) return 'Wrong email or password.';
+  if (m.includes('already registered')) return 'That email already has an account — sign in instead.';
+  if (m.includes('email not confirmed')) return 'Please confirm your email first, then sign in.';
+  if (m.includes('password')) return 'Password must be at least 6 characters.';
+  return message;
+}
 
 export default function Login() {
   const [mode, setMode] = useState<'in' | 'up'>('in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   const notify = (msg: string) =>
     Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Fyropy', msg);
 
   async function submit() {
-    if (!email || !password) return notify('Enter email and password.');
+    setError('');
+    if (!email.trim() || !password) {
+      setError('Enter your email and password.');
+      return;
+    }
+    if (mode === 'up' && password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
     setBusy(true);
-    const { error } =
+    const { error: err } =
       mode === 'in'
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password });
+        ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
+        : await supabase.auth.signUp({ email: email.trim(), password });
     setBusy(false);
-    if (error) notify(error.message);
+    if (err) setError(friendly(err.message));
     else if (mode === 'up') notify('Account created. You can sign in now.');
   }
 
@@ -43,34 +64,53 @@ export default function Login() {
         </Text>
 
         <TextInput
-          style={styles.input}
+          style={[inset, styles.input, noOutline]}
           placeholder="Email"
           placeholderTextColor={colors.inkFaint}
           autoCapitalize="none"
           keyboardType="email-address"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(v) => { setEmail(v); setError(''); }}
         />
         <TextInput
-          style={styles.input}
+          style={[inset, styles.input, noOutline]}
           placeholder="Password"
           placeholderTextColor={colors.inkFaint}
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(v) => { setPassword(v); setError(''); }}
+          onSubmitEditing={submit}
+          returnKeyType="done"
         />
 
-        <Pressable style={styles.button} onPress={submit} disabled={busy}>
+        {mode === 'up' ? (
+          <Text style={styles.hint}>Use at least 6 characters.</Text>
+        ) : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Pressable
+          onPress={submit}
+          disabled={busy}
+          style={({ hovered, pressed }) => [
+            styles.button, glow,
+            hovered && styles.btnHover,
+            pressed && styles.btnPress,
+          ]}
+        >
+          <LinearGradient
+            colors={[colors.accentSoft, colors.accent, colors.accentSunk]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
           {busy ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>
-              {mode === 'in' ? 'Sign in' : 'Sign up'}
-            </Text>
+            <Text style={styles.buttonText}>{mode === 'in' ? 'Sign in' : 'Sign up'}</Text>
           )}
         </Pressable>
 
-        <Pressable onPress={() => setMode(mode === 'in' ? 'up' : 'in')}>
+        <Pressable onPress={() => { setMode(mode === 'in' ? 'up' : 'in'); setError(''); }}>
           <Text style={styles.switch}>
             {mode === 'in' ? "No account? Sign up" : 'Have an account? Sign in'}
           </Text>
@@ -86,19 +126,29 @@ const styles = StyleSheet.create({
     padding: space.lg, maxWidth: 460, width: '100%', alignSelf: 'center',
   },
   brand: { alignItems: 'center', marginBottom: space.xl },
-  logo: { ...type.display, color: colors.accent, fontSize: 40 },
+  logo: { ...type.display, color: colors.accent, fontSize: 44 },
   tag: { ...type.body, color: colors.inkSoft, marginTop: space.xs },
   card: { padding: space.lg },
   heading: { ...type.title, marginBottom: space.md },
   input: {
-    backgroundColor: colors.surfaceSunk, borderRadius: radius.md,
-    paddingHorizontal: space.md, paddingVertical: space.md,
-    fontSize: 16, color: colors.ink, marginBottom: space.sm,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    paddingVertical: space.md,
+    ...type.body,
+    marginBottom: space.sm,
   },
+  hint: { ...type.caption, marginBottom: space.xs },
+  error: { ...type.label, color: colors.accentSunk, marginBottom: space.sm },
   button: {
-    backgroundColor: colors.accent, borderRadius: radius.md,
-    paddingVertical: space.md, alignItems: 'center', marginTop: space.sm,
+    borderRadius: radius.md,
+    paddingVertical: space.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: space.sm,
+    overflow: 'hidden',
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  btnHover: { transform: [{ scale: 1.02 }] },
+  btnPress: { transform: [{ scale: 0.98 }] },
+  buttonText: { ...type.label, color: '#fff', fontSize: 16 },
   switch: { ...type.label, color: colors.accent, textAlign: 'center', marginTop: space.md },
 });
