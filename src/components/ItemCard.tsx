@@ -43,10 +43,16 @@ export function ItemCard({ item, triaging, onToggleDone, onDelete, onPress }: Pr
           </Pressable>
         ) : null}
 
-        <Text style={[styles.text, item.done && styles.done]}>{item.raw_text}</Text>
+        <Text
+          style={[styles.text, item.done && styles.done]}
+          numberOfLines={4}
+          ellipsizeMode="tail"
+        >
+          {item.raw_text}
+        </Text>
 
         {onDelete ? (
-          <Pressable onPress={() => onDelete(item)} hitSlop={8}>
+          <Pressable onPress={() => onDelete(item)} hitSlop={8} style={styles.trash}>
             <Ionicons name="trash-outline" size={18} color={colors.inkFaint} />
           </Pressable>
         ) : null}
@@ -69,7 +75,11 @@ export function ItemCard({ item, triaging, onToggleDone, onDelete, onPress }: Pr
               </View>
             ))}
           </View>
-          {item.summary ? <Text style={styles.summary}>{item.summary}</Text> : null}
+          {item.summary ? (
+            <Text style={styles.summary} numberOfLines={2} ellipsizeMode="tail">
+              {item.summary}
+            </Text>
+          ) : null}
         </View>
       ) : null}
 
@@ -84,8 +94,9 @@ const styles = StyleSheet.create({
   press: { transform: [{ translateY: -1 }] },
   top: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   check: { paddingTop: 1 },
-  text: { ...type.bodyMedium, flex: 1, lineHeight: 22 },
+  text: { ...type.bodyMedium, flex: 1, flexShrink: 1, minWidth: 0, lineHeight: 22 },
   done: { textDecorationLine: 'line-through', color: colors.inkFaint },
+  trash: { paddingTop: 1 },
   sortingRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.sm },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent },
   sorting: { ...type.mono, color: colors.accent },

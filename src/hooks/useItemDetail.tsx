@@ -21,6 +21,9 @@ const TYPE_COLOR: Record<ItemType, string> = {
   note: colors.inkSoft,
 };
 
+const INPUT_MIN = 60;
+const INPUT_MAX = 320;
+
 type Actions = {
   onSaveText: (item: Item, text: string) => void | Promise<void>;
   onDelete: (item: Item) => void | Promise<void>;
@@ -46,8 +49,12 @@ function DetailInner({
   const [done, setDone] = useState(item.done);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [inputH, setInputH] = useState(0);
 
   const changed = text.trim() !== item.raw_text && text.trim().length > 0;
+  const inputHeight = inputH
+    ? Math.min(Math.max(inputH, INPUT_MIN), INPUT_MAX)
+    : INPUT_MIN;
 
   async function saveAndSort() {
     setBusy(true);
@@ -83,10 +90,12 @@ function DetailInner({
 
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
             <TextInput
-              style={[styles.input, noOutline]}
+              style={[styles.input, noOutline, { height: inputHeight }]}
               value={text}
               onChangeText={setText}
+              onContentSizeChange={(e) => setInputH(e.nativeEvent.contentSize.height)}
               multiline
+              scrollEnabled
               placeholder="Your thought…"
               placeholderTextColor={colors.inkFaint}
             />
@@ -172,7 +181,7 @@ const styles = StyleSheet.create({
     ...type.body,
     fontSize: 18,
     lineHeight: 26,
-    minHeight: 60,
+    minHeight: INPUT_MIN,
     paddingVertical: space.sm,
   },
   chipRow: {
