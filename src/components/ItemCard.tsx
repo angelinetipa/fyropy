@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
 import { clay, clayHover, radius, space, transition, type } from '../constants/theme';
+import { timeAgo } from '../lib/time';
 import { Item, ItemType } from '../types';
 
 const TYPE_COLOR: Record<ItemType, string> = {
@@ -71,6 +72,8 @@ export function ItemCard({ item, triaging, onToggleDone, onDelete, onPress }: Pr
           {item.summary ? <Text style={styles.summary}>{item.summary}</Text> : null}
         </View>
       ) : null}
+
+      <Text style={styles.time}>{timeAgo(item.created_at)}</Text>
     </Pressable>
   );
 }
@@ -104,4 +107,5 @@ const styles = StyleSheet.create({
   },
   tagText: { ...type.mono, color: colors.inkSoft },
   summary: { ...type.caption, color: colors.inkSoft, marginTop: space.xs, lineHeight: 18 },
+  time: { ...type.mono, color: colors.inkFaint, fontSize: 10, marginTop: space.sm },
 });
