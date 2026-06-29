@@ -17,9 +17,12 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { colors } from '../src/constants/colors';
 import { AuthProvider, useAuth } from '../src/hooks/useAuth';
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  document.title = 'Fyropy';
+}
 
 SplashScreen.preventAutoHideAsync();
 
