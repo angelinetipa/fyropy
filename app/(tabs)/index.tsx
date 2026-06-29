@@ -4,12 +4,14 @@ import { FlatList, Pressable, StyleSheet, Text } from 'react-native';
 import { CaptureBar } from '../../src/components/CaptureBar';
 import { ItemCard } from '../../src/components/ItemCard';
 import { Screen } from '../../src/components/Screen';
+import { SearchBar } from '../../src/components/SearchBar';
 import { colors } from '../../src/constants/colors';
 import { space, type as typo } from '../../src/constants/theme';
 import { useItems } from '../../src/hooks/useItems';
 
 export default function Inbox() {
-  const { items, loading, triagingIds, add, toggleDone, remove } = useItems();
+  const { items, loading, triagingIds, query, setQuery, add, toggleDone, remove } =
+    useItems();
   const router = useRouter();
 
   return (
@@ -23,10 +25,11 @@ export default function Inbox() {
       }
     >
       <CaptureBar onCapture={add} />
+      <SearchBar value={query} onChange={setQuery} />
       <FlatList
         data={items}
         keyExtractor={(it) => it.id}
-        contentContainerStyle={{ paddingVertical: space.md, gap: space.sm }}
+        contentContainerStyle={{ paddingVertical: space.sm, gap: space.sm }}
         renderItem={({ item }) => (
           <ItemCard
             item={item}
@@ -38,7 +41,7 @@ export default function Inbox() {
         ListEmptyComponent={
           !loading ? (
             <Text style={styles.empty}>
-              Nothing caught yet. Drop your first thought above.
+              {query ? 'No matches.' : 'Nothing caught yet. Drop your first thought above.'}
             </Text>
           ) : null
         }

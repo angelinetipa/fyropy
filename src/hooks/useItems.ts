@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { triage } from '../services/ai';
 import {
     createItem,
@@ -10,9 +11,11 @@ import {
 import { Item, ItemType } from '../types';
 
 export function useItems(filter?: ItemType[]) {
+  const filterKey = filter?.join(',') ?? 'all';
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [triagingIds, setTriagingIds] = useState<Set<string>>(new Set());
+  const [query, setQuery] = useState('');
 
   const refresh = useCallback(async () => {
     try {
@@ -20,11 +23,15 @@ export function useItems(filter?: ItemType[]) {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  // Re-fetch every time the tab gains focus (fixes the "press F5" issue).
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   const runTriage = useCallback(
     async (item: Item) => {
@@ -32,7 +39,6 @@ export function useItems(filter?: ItemType[]) {
       try {
         const t = await triage(item.raw_text);
         await updateItemTriage(item.id, t);
-        // If this list is filtered and the new type doesn't match, drop it.
         setItems((prev) =>
           prev
             .map((i) => (i.id === item.id ? { ...i, ...t } : i))
@@ -47,14 +53,15 @@ export function useItems(filter?: ItemType[]) {
           return next;
         });
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [filter]
+    [filterKey]
   );
 
   const add = useCallback(
     async (text: string) => {
       const item = await createItem(text);
-      setItems((prev) => [item, ...prev]); // Inbox shows it immediately
+      setItems((prev) => [item, ...prev]);
       runTriage(item);
     },
     [runTriage]
@@ -70,14 +77,39 @@ export function useItems(filter?: ItemType[]) {
     }
   }, []);
 
-  const remove = useCallback(async (item: Item) => {
-    setItems((prev) => prev.filter((i) => i.id !== item.id));
-    try {
-      await deleteItem(item.id);
-    } catch {
-      refresh();
-    }
-  }, [refresh]);
+  const remove = useCallback(
+    async (item: Item) => {
+      setItems((prev) => prev.filter((i) => i.id !== item.id));
+      try {
+        await deleteItem(item.id);
+      } catch {
+        refresh();
+      }
+    },
+    [refresh]
+  );
 
-  return { items, loading, triagingIds, add, toggleDone, remove, refresh };
+  // Search across raw text, summary, and tags.
+  const visibleItems = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((i) => {
+      const hay = [i.raw_text, i.summary ?? '', ...(i.tags ?? [])]
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [items, query]);
+
+  return {
+    items: visibleItems,
+    loading,
+    triagingIds,
+    query,
+    setQuery,
+    add,
+    toggleDone,
+    remove,
+    refresh,
+  };
 }
